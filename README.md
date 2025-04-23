@@ -7,7 +7,7 @@
 🇨🇳 **安全优先的密码生成器** - 完全在浏览器端运行，采用军用级加密技术  
 🇺🇸 **Privacy-First Password Generator** - Runs entirely in browser with military-grade encryption
 
-[🇨🇳 在线体验](https://https://liuzexiao.com/pwd/index.html)
+[🇨🇳 在线体验](https://liuzexiao.com/pwd/index.html)
 
 ![UI Preview](./screenshot.png)
 
