@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>智能密码生成器</title>
+    <style>
+        :root {
+            --primary: #2196F3;
+            --success: #4CAF50;
+            --warning: #ff9800;
+            --error: #f44336;
+            --text: #333;
+            --border: #ddd;
+            --bg: #f5f5f5;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            margin: 2rem auto;
+            max-width: 600px;
+            padding: 0 20px;
+            color: var(--text);
+            background-color: #f8f9fa;
+        }
+
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 2rem;
+        }
+
+        h1 {
+            text-align: center;
+            margin: 0 0 2rem;
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.75rem;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        input[type="number"] {
+            width: 100px;
+            padding: 10px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .checkbox-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .checkbox-label:hover {
+            background: #e9ecef;
+        }
+
+        .password-box {
+            margin: 2rem 0 1rem;
+            display: flex;
+            gap: 12px;
+        }
+
+        #password {
+            flex: 1;
+            padding: 14px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: opacity 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .copy-btn {
+            background: var(--success);
+            color: white;
+            min-width: 100px;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 12px 24px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            animation: fadeIn 0.3s ease;
+            z-index: 1000;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            background-color: var(--primary);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .security-statement {
+            margin-top: 2rem;
+            border-top: 1px solid #eee;
+            padding: 1rem 0;
+            font-size: 0.9em;
+        }
+
+        .security-statement details {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 10px;
+        }
+
+        .security-statement summary {
+            cursor: pointer;
+            font-weight: 500;
+            color: #2196F3;
+            padding: 8px;
+        }
+
+        .statement-content {
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+
+        .statement-content h3 {
+            color: #333;
+            font-size: 1.1em;
+            margin: 1em 0 0.5em;
+            border-bottom: 1px dashed #ddd;
+            padding-bottom: 0.3em;
+        }
+
+        .statement-content ul {
+            padding-left: 1.5em;
+            line-height: 1.6;
+        }
+
+        .statement-content li {
+            margin: 0.5em 0;
+            padding-left: 1em;
+            position: relative;
+        }
+
+        .statement-content li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #4CAF50;
+        }
+
+        .disclaimer {
+            background: #fff3e0;
+            padding: 1em;
+            border-radius: 8px;
+            margin: 1em 0;
+        }
+
+        .disclaimer h3 {
+            color: #f44336;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>随机密码生成器</h1>
+        <div class="security-statement">
+            <details>
+                <summary>🔒 安全声明 | Security Statement</summary>
+                <div class="statement-content">
+                    <h3>安全承诺</h3>
+                    <ul>
+                        <li>🛡️ 零网络传输 - 所有操作在浏览器本地完成，不进行任何网络连接</li>
+                        <li>💾 无数据存储 - 生成的密码不会以任何形式保存或记录</li>
+                        <li>🔑 开源透明 - <a href="https://github.com/irtb/PassForge">查看完整源代码</a></li>
+                        <li>⚙️ 安全算法 - 使用Web Crypto API的加密级随机数生成器</li>
+                    </ul>
+
+                    <h3>隐私保护</h3>
+                    <ul>
+                        <li>🚫 不收集任何用户信息或使用数据</li>
+                        <li>🔍 无追踪代码或第三方脚本</li>
+                        <li>🌐 符合GDPR隐私保护标准</li>
+                    </ul>
+
+                    <div class="disclaimer">
+                        <h3>免责声明</h3>
+                        <p>本工具按"现状"提供，使用者应自行承担密码使用风险。建议：</p>
+                        <ul>
+                            <li>🔑 为重要账户启用双重验证</li>
+                            <li>🔄 定期更换高敏感度密码</li>
+                            <li>📱 在可信设备上生成密码</li>
+                        </ul>
+                    </div>
+
+                    <h3>Security Features</h3>
+                    <ul>
+                        <li>🔐 Client-side execution only</li>
+                        <li>🚫 No network communication</li>
+                        <li>📜 Open-source verification</li>
+                        <li>⚡ Cryptographically secure RNG</li>
+                    </ul>
+                </div>
+            </details>
+        </div>
+        
+        <!-- 配置区域 -->
+        <div class="form-group">
+            <label>密码长度 (8-64):</label>
+            <input type="number" id="length" min="8" max="64" value="16">
+        </div>
+        
+        <div class="form-group">
+            <label>包含字符类型：</label>
+            <div class="checkbox-grid">
+                <label class="checkbox-label">
+                    <input type="checkbox" class="charset" value="uppercase" checked>
+                    ABC 大写字母
+                </label>
+                <label class="checkbox-label">
+                    <input type="checkbox" class="charset" value="lowercase" checked>
+                    abc 小写字母
+                </label>
+                <label class="checkbox-label">
+                    <input type="checkbox" class="charset" value="numbers" checked>
+                    123 数字
+                </label>
+                <label class="checkbox-label">
+                    <input type="checkbox" class="charset" value="symbols">
+                    !@# 符号
+                </label>
+            </div>
+        </div>
+
+        <!-- 生成按钮 -->
+        <button class="btn btn-primary" onclick="generatePassword()">
+            🎲 生成随机密码
+        </button>
+
+        <!-- 密码显示区域 -->
+        <div class="password-box">
+            <input type="text" id="password" readonly placeholder="点击生成按钮获取密码">
+            <button class="btn copy-btn" onclick="copyPassword()">
+                📋 复制
+            </button>
+        </div>
+    </div>
+
+
+    <script>
+        // 生成密码核心逻辑
+        function generatePassword() {
+            const length = Math.min(Math.max(parseInt(document.getElementById('length').value) || 16, 8), 64);
+            const charSets = {
+                uppercase: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+                lowercase: 'abcdefghijklmnopqrstuvwxyz',
+                numbers: '0123456789',
+                symbols: '!@#$%^&*()_+-=[]{}|;:,.<>?'
+            };
+
+            // 获取选中的字符集
+            const selected = Array.from(document.querySelectorAll('.charset:checked'))
+                .map(cb => charSets[cb.value])
+                .join('');
+
+            if (!selected) {
+                showToast('请至少选择一种字符类型', 'warning');
+                return;
+            }
+
+            // 生成随机密码
+            const buffer = new Uint32Array(length);
+            window.crypto.getRandomValues(buffer);
+            
+            let password = '';
+            for (let i = 0; i < length; i++) {
+                password += selected[buffer[i] % selected.length];
+            }
+
+            document.getElementById('password').value = password;
+            showToast('密码生成成功');
+        }
+
+        // 复制密码功能
+        async function copyPassword() {
+            const password = document.getElementById('password').value;
+            if (!password) {
+                showToast('请先生成密码', 'warning');
+                return;
+            }
+
+            try {
+                await navigator.clipboard.writeText(password);
+                showToast('复制成功');
+            } catch (err) {
+                const input = document.getElementById('password');
+                input.select();
+                document.execCommand('copy');
+                showToast('已使用备用方式复制');
+            }
+        }
+
+        // 显示通知
+        function showToast(message, type = 'success') {
+            const colors = {
+                success: '#4CAF50',
+                error: '#f44336',
+                warning: '#ff9800'
+            };
+            
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            toast.style.backgroundColor = colors[type] || '#2196F3';
+            
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 2000);
+        }
+    </script>
+</body>
+</html>
